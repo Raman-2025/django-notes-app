@@ -1,29 +1,39 @@
-@Library('Shared')_
+@Library('shared') _
 pipeline{
-    agent { label 'dev-server'}
-    
+    agent{label 'vinod'}
     stages{
-        stage("Code clone"){
+        stage ('hello'){
             steps{
-                sh "whoami"
-            clone("https://github.com/LondheShubham153/django-notes-app.git","main")
+                script{
+                    hello()
+                }
             }
         }
-        stage("Code Build"){
+        stage('code'){
             steps{
-            dockerbuild("notes-app","latest")
+                script{
+               clone ('https://github.com/Raman-2025/django-notes-app.git', 'main')
+                }
             }
         }
-        stage("Push to DockerHub"){
+        stage('build'){
             steps{
-                dockerpush("dockerHubCreds","notes-app","latest")
+                script{
+                    docker_build('notes-app','latest',"raman20260"  )
+                }
             }
         }
-        stage("Deploy"){
-            steps{
-                deploy()
+        stage('push to dockerhub'){
+            steps {
+                script{
+                    docker_push('notes-app','latest','raman20260')
+                }
             }
         }
-        
+        stage('deploy'){
+            steps{
+                echo 'this is deploying the code'
+                sh 'docker compose down && docker compose up -d '
+            } 
+        }       
     }
-}
